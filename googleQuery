@@ -1,0 +1,39 @@
+import requests
+from bs4 import BeautifulSoup
+
+def get_top_10_google_hits(query):
+    url = f"https://www.google.com/search?q={query}"
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
+
+    # Send a request to Google
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        # Parse the HTML response
+        soup = BeautifulSoup(response.text, "html.parser")
+        
+        # Extract search results
+        search_results = soup.find_all("div", class_="tF2Cxc")
+
+        # Extract URLs from search results
+        top_10_urls = [result.find("a")["href"] for result in search_results[:10]]
+        
+        return top_10_urls
+    else:
+        print("Error:", response.status_code)
+        return None
+
+def query_google():
+    query = input("Enter a search keyword: ")
+    top_10_urls = get_top_10_google_hits(query)
+    if top_10_urls:
+        for index, url in enumerate(top_10_urls, start=1):
+            print(f"{index}. {url}")
+
+query_google()
+
+again = input("Would you like to query a new search term?: (y/n): ")
+if again == again.lower == "y" or again == "Y":
+    query_google()
+else:
+    print("Goodbye! ")
